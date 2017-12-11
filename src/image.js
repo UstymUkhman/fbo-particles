@@ -112,7 +112,7 @@ export default class AudioreactiveParticles {
     this.scene.add(this.fbo.particles);
     this.audio.play(this.update.bind(this));
     // this.audio.getAudioValues();
-    this.update();
+    // this.update();
   }
 
   getDataImage () {

@@ -99,7 +99,7 @@ export default class Particles {
 
   createLights () {
     this.sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.5, 64, 64), // 0.5
+      new THREE.SphereGeometry(0.5, 64, 64),
       new THREE.MeshBasicMaterial({
         color: 0xFFFFFF
       })
@@ -171,10 +171,6 @@ export default class Particles {
     const angle = Math.PI / 180;
     this.stats.begin();
 
-    if (this.simulationShader && this.slider) {
-      this.simulationShader.uniforms.timer.value = parseFloat(this.slider.value);
-    }
-
     this.fbo.particles.rotation.y -= angle * 0.1;
     this.fbo.update();
 
@@ -189,9 +185,9 @@ export default class Particles {
       this.updateSpherePosition(time);
 
       if (this.pressed === null) {
-        if (this.lightSpeed >  0) this.lightSpeed -= 0.1;
-        if (this.distance   > 90) this.distance   -= 0.2;
-        if (this.speed      > 10) this.speed      -= 1.0;
+        if (this.lightSpeed >  0) this.lightSpeed -= 0.05;
+        if (this.distance   > 90) this.distance   -= 1.5;
+        if (this.speed      > 10) this.speed      -= 2.5;
 
         if (this.bigColor.x > 0.250) {
           this.bigColor.x -= 0.01;
@@ -219,13 +215,17 @@ export default class Particles {
     if (!this.lightSpeed) return;
 
     this.startTime += 0.1;
-    const radius = this.lightSpeed / 4.0 * 85.0;
+    let radius = this.lightSpeed / 4.0 * 50.0;
+
+    if (radius > 50.0) {
+      radius = 50.0;
+    }
 
     const x = -radius * Math.cos(time * Math.PI);
     const y =  radius * Math.sin(this.startTime);
     const z =  radius * Math.cos(Math.acos(y / radius));
 
-    const scale = this.lightSpeed + 0.5;
+    const scale = this.lightSpeed * 2.5;
 
     this.sphere.position.set(x, y, z);
     this.sphere.scale.set(scale, scale, scale);
@@ -237,9 +237,9 @@ export default class Particles {
     const power = delay / frac * 0.0005;
 
     if (this.bigColor.x < 224.0) {
-      this.bigColor.x += 0.01;
-      this.bigColor.y += 0.01;
-      this.bigColor.z += 0.01;
+      this.bigColor.x += 0.005;
+      this.bigColor.y += 0.005;
+      this.bigColor.z += 0.005;
     }
 
     if (this.smallColor.x < 192.0) {
@@ -250,7 +250,7 @@ export default class Particles {
 
     this.speed      = power * 340 + 10;
     this.distance   = power *  20 + 90;
-    this.lightSpeed = power;
+    this.lightSpeed = power *   5;
 
     if (!pressed) {
       this.onKeyUp(!pressed);

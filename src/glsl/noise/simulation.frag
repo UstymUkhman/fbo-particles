@@ -55,12 +55,12 @@ float noise (vec2 v) {
   g.x  = a0.x  * x0.x   + h.x  * x0.y;
   g.yz = a0.yz * x12.xz + h.yz * x12.yw;
 
-  return 130.0 * dot(m, g);
+  return 20.0 * dot(m, g);
 }
 
 vec3 curl (float x, float y, float z) {
   float	eps	 = 1.0,
-        eps2 = 2.0 * eps;
+        eps2 = 2.0;
 
   vec3 curl = vec3(0.0);
   float n1, n2, a, b;
@@ -69,9 +69,9 @@ vec3 curl (float x, float y, float z) {
   y *= 0.01;
   z *= 0.01;
 
-  x += timer * 0.05;
-  y += timer * 0.05;
-  z += timer * 0.05;
+  x += timer * 0.5;
+  y += timer * 0.5;
+  z += timer * 0.5;
 
   n1 = noise(vec2(x, y + eps));
   n2 = noise(vec2(x, y - eps));

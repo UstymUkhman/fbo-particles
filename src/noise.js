@@ -1,6 +1,5 @@
 import TweenLite from 'gsap/TweenLite';
 import * as THREE from 'three';
-
 import Stats from 'stats.js';
 import Fbo from './FBO.js';
 
@@ -206,15 +205,15 @@ export default class Particles {
         if (this.speed      > 10) this.speed      -= 2.5;
 
         if (this.bigColor.x > 0.250) {
-          this.bigColor.x -= 0.01;
-          this.bigColor.y -= 0.01;
-          this.bigColor.z -= 0.01;
+          this.bigColor.x -= 0.005;
+          this.bigColor.y -= 0.005;
+          this.bigColor.z -= 0.005;
         }
 
         if (this.smallColor.x > 0.125) {
-          this.smallColor.x -= 0.01;
-          this.smallColor.y -= 0.01;
-          this.smallColor.z -= 0.01;
+          this.smallColor.x -= 0.005;
+          this.smallColor.y -= 0.005;
+          this.smallColor.z -= 0.005;
         }
       } else {
         this.animate();
@@ -266,13 +265,15 @@ export default class Particles {
 
   updateSphereColor () {
     const current = new THREE.Color(this.sphere.material.color.getHex());
-    const nextColor = this.colors[Math.floor(Math.random() * 5)];
+    const index   = Math.floor(Math.random() * this.colors.length);
+    const color   = this.colors[index];
 
     TweenLite.to(current, 1, {
-      r: nextColor.r,
-      g: nextColor.g,
-      b: nextColor.b,
+      r: color.r,
+      g: color.g,
+      b: color.b,
 
+      duration: 0.5,
       onUpdate: () => {
         this.sphere.material.color = current;
       }
@@ -284,13 +285,13 @@ export default class Particles {
     const delay = Date.now() - this.pressed;
     const power = delay / frac * 0.0005;
 
-    if (this.bigColor.x < 224.0) {
+    if (this.bigColor.x < 0.8784313725490196) {
       this.bigColor.x += 0.005;
       this.bigColor.y += 0.005;
       this.bigColor.z += 0.005;
     }
 
-    if (this.smallColor.x < 192.0) {
+    if (this.smallColor.x < 0.7529411764705882) {
       this.smallColor.x += 0.01;
       this.smallColor.y += 0.01;
       this.smallColor.z += 0.01;

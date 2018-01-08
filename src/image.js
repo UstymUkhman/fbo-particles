@@ -1,7 +1,7 @@
 import AudioReactive from './AudioReactive';
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import Fbo from './FBO.js';
+import Fbo from './FBO';
 
 const OrbitControls = require('three-orbit-controls')(THREE);
 

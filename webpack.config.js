@@ -24,6 +24,7 @@ if (env === 'build') {
 }
 
 const config = {
+  // entry: __dirname + '/src/image.js',
   entry: __dirname + '/src/noise.js',
   devtool: 'source-map',
   output: {

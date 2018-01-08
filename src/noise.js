@@ -1,4 +1,6 @@
+import TweenLite from 'gsap/TweenLite';
 import * as THREE from 'three';
+
 import Stats from 'stats.js';
 import Fbo from './FBO.js';
 
@@ -22,6 +24,14 @@ export default class Particles {
       width  : window.innerWidth,
       height : window.innerHeight
     };
+
+    this.colors = [
+      new THREE.Color(0x11E8BB),
+      new THREE.Color(0x8200C9),
+      new THREE.Color(0x4564C4),
+      new THREE.Color(0xFF9405),
+      new THREE.Color(0x5ECF00)
+    ];
 
     this.createScene();
     this.createCamera();
@@ -99,11 +109,17 @@ export default class Particles {
 
   createLights () {
     this.sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.5, 64, 64),
+      new THREE.IcosahedronGeometry(1, 1),
       new THREE.MeshBasicMaterial({
+        shading: THREE.FlatShading,
         color: 0xFFFFFF
       })
     );
+
+    this.sphere.add(new THREE.LineSegments(
+      new THREE.WireframeGeometry(this.sphere.geometry),
+      new THREE.LineBasicMaterial({ color: 0x000000 })
+    ));
 
     this.sphere.position.set(0, 0, 0);
     this.scene.add(this.sphere);
@@ -182,7 +198,7 @@ export default class Particles {
       const time = Math.cos(Date.now() * 0.001);
       this.fbo.particles.rotation.x = time * angle * 2.0;
 
-      this.updateSpherePosition(time);
+      this.updateSphereAspect(time);
 
       if (this.pressed === null) {
         if (this.lightSpeed >  0) this.lightSpeed -= 0.05;
@@ -211,7 +227,7 @@ export default class Particles {
     requestAnimationFrame(this.update.bind(this));
   }
 
-  updateSpherePosition (time) {
+  updateSphereAspect (time) {
     if (!this.lightSpeed) return;
 
     this.startTime += 0.1;
@@ -221,14 +237,46 @@ export default class Particles {
       radius = 50.0;
     }
 
+    if (this.lightSpeed <= 0.0) {
+      this.lightSpeed = 0.0;
+      this.startTime = 0.0;
+      radius = 0.0;
+    } else if (this.lightSpeed > 20.0) {
+      this.lightSpeed = 20.0;
+    }
+
+    if (+this.startTime.toFixed(1) % 5.0 === 0.0) {
+      this.updateSphereColor();
+    }
+
     const x = -radius * Math.cos(time * Math.PI);
     const y =  radius * Math.sin(this.startTime);
     const z =  radius * Math.cos(Math.acos(y / radius));
 
     const scale = this.lightSpeed * 2.5;
+    const rotation = this.lightSpeed / 100.0;
+
+    this.sphere.rotation.x += rotation;
+    this.sphere.rotation.y += rotation;
+    this.sphere.rotation.z += rotation;
 
     this.sphere.position.set(x, y, z);
     this.sphere.scale.set(scale, scale, scale);
+  }
+
+  updateSphereColor () {
+    const current = new THREE.Color(this.sphere.material.color.getHex());
+    const nextColor = this.colors[Math.floor(Math.random() * 5)];
+
+    TweenLite.to(current, 1, {
+      r: nextColor.r,
+      g: nextColor.g,
+      b: nextColor.b,
+
+      onUpdate: () => {
+        this.sphere.material.color = current;
+      }
+    });
   }
 
   animate (pressed = false) {

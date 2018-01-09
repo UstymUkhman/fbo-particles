@@ -38,12 +38,10 @@ export default class Particles {
 
     this.createOrbitControls();
     this.createStats();
-
-    this.createLights();
-    this.createNoise();
-    this.update();
-
     this.bindEvents();
+
+    this.createParticles();
+    this.createSphere();
   }
 
   createScene () {
@@ -106,25 +104,50 @@ export default class Particles {
     return vertex.normalize().multiplyScalar(size);
   }
 
-  createLights () {
-    this.sphere = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(1, 1),
-      new THREE.MeshBasicMaterial({
-        shading: THREE.FlatShading,
-        color: 0xFFFFFF
-      })
-    );
+  createSphere () {
+    const loader = new THREE.TextureLoader();
 
-    this.sphere.add(new THREE.LineSegments(
-      new THREE.WireframeGeometry(this.sphere.geometry),
-      new THREE.LineBasicMaterial({ color: 0x000000 })
-    ));
+    loader.load('./assets/white.jpg',
+      (white) => {
+        loader.load('./assets/black.jpg',
+          (black) => {
+            this.sphereMaterial = new THREE.ShaderMaterial({
+              fragmentShader: require('./glsl/noise/sphere.frag'),
+              vertexShader: require('./glsl/noise/sphere.vert'),
+              shading: THREE.SmoothShading,
 
-    this.sphere.position.set(0, 0, 0);
-    this.scene.add(this.sphere);
+              uniforms: {
+                progress: { type: 'f', value: 0.0 },
+                white: { type: 't', value: white },
+                black: { type: 't', value: black }
+              }
+            });
+
+            this.sphere = new THREE.Mesh(
+              new THREE.SphereGeometry(1, 32, 32),
+              this.sphereMaterial
+            );
+
+            this.wireframes = new THREE.LineSegments(
+              new THREE.WireframeGeometry(this.sphere.geometry),
+              new THREE.LineBasicMaterial({
+                transparent: true,
+                color: 0xFFFFFF,
+                linewidth: 1
+              })
+            );
+
+            this.sphere.position.set(0, 0, 0);
+            this.sphere.add(this.wireframes);
+            this.scene.add(this.sphere);
+            this.update();
+          }
+        )
+      }
+    )
   }
 
-  createNoise () {
+  createParticles () {
     const size = 512;
     const length = Math.pow(size, 2) * 3;
 
@@ -189,35 +212,33 @@ export default class Particles {
     this.fbo.particles.rotation.y -= angle * 0.1;
     this.fbo.update();
 
-    if (this.mode === 'noise') {
-      this.simulationShader.uniforms.distance.value = this.distance;
-      this.simulationShader.uniforms.speed.value = this.speed;
-      this.simulationShader.uniforms.timer.value += 0.01;
+    this.simulationShader.uniforms.distance.value = this.distance;
+    this.simulationShader.uniforms.speed.value = this.speed;
+    this.simulationShader.uniforms.timer.value += 0.01;
 
-      const time = Math.cos(Date.now() * 0.001);
-      this.fbo.particles.rotation.x = time * angle * 2.0;
+    const time = Math.cos(Date.now() * 0.001);
+    this.fbo.particles.rotation.x = time * angle * 2.0;
 
-      this.updateSphereAspect(time);
+    this.updateSphereAspect(time);
 
-      if (this.pressed === null) {
-        if (this.lightSpeed >  0) this.lightSpeed -= 0.05;
-        if (this.distance   > 90) this.distance   -= 1.5;
-        if (this.speed      > 10) this.speed      -= 2.5;
+    if (this.pressed === null) {
+      if (this.lightSpeed >  0) this.lightSpeed -= 0.05;
+      if (this.distance   > 90) this.distance   -= 1.5;
+      if (this.speed      > 10) this.speed      -= 2.5;
 
-        if (this.bigColor.x > 0.250) {
-          this.bigColor.x -= 0.005;
-          this.bigColor.y -= 0.005;
-          this.bigColor.z -= 0.005;
-        }
-
-        if (this.smallColor.x > 0.125) {
-          this.smallColor.x -= 0.005;
-          this.smallColor.y -= 0.005;
-          this.smallColor.z -= 0.005;
-        }
-      } else {
-        this.animate();
+      if (this.bigColor.x > 0.250) {
+        this.bigColor.x -= 0.005;
+        this.bigColor.y -= 0.005;
+        this.bigColor.z -= 0.005;
       }
+
+      if (this.smallColor.x > 0.125) {
+        this.smallColor.x -= 0.005;
+        this.smallColor.y -= 0.005;
+        this.smallColor.z -= 0.005;
+      }
+    } else {
+      this.animate();
     }
 
     this.renderer.render(this.scene, this.camera);
@@ -227,10 +248,8 @@ export default class Particles {
   }
 
   updateSphereAspect (time) {
-    if (!this.lightSpeed) return;
-
-    this.startTime += 0.1;
     let radius = this.lightSpeed / 4.0 * 50.0;
+    this.startTime += 0.1;
 
     if (radius > 50.0) {
       radius = 50.0;
@@ -244,40 +263,16 @@ export default class Particles {
       this.lightSpeed = 20.0;
     }
 
-    if (+this.startTime.toFixed(1) % 5.0 === 0.0) {
-      this.updateSphereColor();
-    }
+    const scale = this.lightSpeed * 4.0 + 20;
+    const progress = this.lightSpeed / 20.0;
+    const hex = 1 - progress;
 
-    const x = -radius * Math.cos(time * Math.PI);
-    const y =  radius * Math.sin(this.startTime);
-    const z =  radius * Math.cos(Math.acos(y / radius));
+    this.wireframes.material.opacity = Math.max(0.5 - progress, 0.25);
+    this.wireframes.material.color = new THREE.Color(hex, hex, hex);
 
-    const scale = this.lightSpeed * 2.5;
-    const rotation = this.lightSpeed / 100.0;
-
-    this.sphere.rotation.x += rotation;
-    this.sphere.rotation.y += rotation;
-    this.sphere.rotation.z += rotation;
-
-    this.sphere.position.set(x, y, z);
+    this.sphereMaterial.uniforms.progress.value = progress;
+    this.sphere.rotation.y += this.lightSpeed / 50.0;
     this.sphere.scale.set(scale, scale, scale);
-  }
-
-  updateSphereColor () {
-    const current = new THREE.Color(this.sphere.material.color.getHex());
-    const index   = Math.floor(Math.random() * this.colors.length);
-    const color   = this.colors[index];
-
-    TweenLite.to(current, 1, {
-      r: color.r,
-      g: color.g,
-      b: color.b,
-
-      duration: 0.5,
-      onUpdate: () => {
-        this.sphere.material.color = current;
-      }
-    });
   }
 
   animate (pressed = false) {

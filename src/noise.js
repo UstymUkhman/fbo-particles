@@ -153,8 +153,7 @@ export default class Particles {
       THREE.RepeatWrapping
     );
 
-    this.bigColor   = new THREE.Vector3(0.250, 0.250, 0.250);
-    this.smallColor = new THREE.Vector3(0.125, 0.125, 0.125);
+    this.particleColor = new THREE.Vector3(0.0, 0.0, 0.0);
 
     this.controls.minDistance = 400;
     this.controls.maxDistance = 400;
@@ -178,14 +177,13 @@ export default class Particles {
       fragmentShader: require(`${this.shaders}/render.frag`),
       vertexShader: require(`${this.shaders}/render.vert`),
 
-      side: THREE.DoubleSide,
-      transparent: true,
-
       uniforms: {
-        big:       { type: 'v3', value: this.bigColor   },
-        small:     { type: 'v3', value: this.smallColor },
+        color:     { type: 'v3', value: this.particleColor },
         positions: { type: 't',  value: null }
-      }
+      },
+
+      side: THREE.DoubleSide,
+      transparent: true
     });
 
     this.fbo = new Fbo(
@@ -218,18 +216,12 @@ export default class Particles {
       if (this.distance   > 90) this.distance   -= 1.5;
       if (this.speed      > 10) this.speed      -= 4.0;
 
-      if (this.bigColor.x > 0.250) {
-        this.bigColor.x -= 0.005;
-        this.bigColor.y -= 0.005;
-        this.bigColor.z -= 0.005;
-      }
+      const step = this.speed > 10 ? 0.002 : 0.01;
 
-      const step = this.speed > 10 ? 0.0025 : 0.01;
-
-      if (this.smallColor.x > 0.125) {
-        this.smallColor.x -= step;
-        this.smallColor.y -= step;
-        this.smallColor.z -= step;
+      if (this.particleColor.x > 0.0) {
+        this.particleColor.x -= step;
+        this.particleColor.y -= step;
+        this.particleColor.z -= step;
       }
     } else {
       this.animate();
@@ -274,16 +266,10 @@ export default class Particles {
     const delay = Date.now() - this.pressed;
     const power = delay / frac * 0.0005;
 
-    if (this.bigColor.x < 0.8784313725490196) {
-      this.bigColor.x += 0.005;
-      this.bigColor.y += 0.005;
-      this.bigColor.z += 0.005;
-    }
-
-    if (this.smallColor.x < 0.7529411764705882) {
-      this.smallColor.x += 0.01;
-      this.smallColor.y += 0.01;
-      this.smallColor.z += 0.01;
+    if (this.particleColor.x < 0.7529411764705882) {
+      this.particleColor.x += 0.001;
+      this.particleColor.y += 0.001;
+      this.particleColor.z += 0.001;
     }
 
     this.speed      = power * 340 + 10;

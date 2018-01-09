@@ -1,4 +1,3 @@
-import TweenLite from 'gsap/TweenLite';
 import * as THREE from 'three';
 import Stats from 'stats.js';
 import Fbo from './FBO.js';
@@ -8,6 +7,7 @@ const OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class Particles {
   constructor (mode) {
+    this.overlay = document.getElementById('background-overlay');
     this.shaders = `./glsl/${mode}`;
     this.simulationShader = null;
     this.renderShader = null;
@@ -23,14 +23,6 @@ export default class Particles {
       width  : window.innerWidth,
       height : window.innerHeight
     };
-
-    this.colors = [
-      new THREE.Color(0x11E8BB),
-      new THREE.Color(0x8200C9),
-      new THREE.Color(0x4564C4),
-      new THREE.Color(0xFF9405),
-      new THREE.Color(0x5ECF00)
-    ];
 
     this.createScene();
     this.createCamera();
@@ -59,9 +51,9 @@ export default class Particles {
       alpha: true
     });
 
-    this.renderer.setClearColor(0x000000);
-    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    // this.renderer.setClearColor(0x000000);
 
     document.body.appendChild(this.renderer.domElement);
   }
@@ -224,7 +216,7 @@ export default class Particles {
     if (this.pressed === null) {
       if (this.lightSpeed >  0) this.lightSpeed -= 0.05;
       if (this.distance   > 90) this.distance   -= 1.5;
-      if (this.speed      > 10) this.speed      -= 2.5;
+      if (this.speed      > 10) this.speed      -= 4.0;
 
       if (this.bigColor.x > 0.250) {
         this.bigColor.x -= 0.005;
@@ -232,10 +224,12 @@ export default class Particles {
         this.bigColor.z -= 0.005;
       }
 
+      const step = this.speed > 10 ? 0.0025 : 0.01;
+
       if (this.smallColor.x > 0.125) {
-        this.smallColor.x -= 0.005;
-        this.smallColor.y -= 0.005;
-        this.smallColor.z -= 0.005;
+        this.smallColor.x -= step;
+        this.smallColor.y -= step;
+        this.smallColor.z -= step;
       }
     } else {
       this.animate();
@@ -248,31 +242,31 @@ export default class Particles {
   }
 
   updateSphereAspect (time) {
-    let radius = this.lightSpeed / 4.0 * 50.0;
     this.startTime += 0.1;
-
-    if (radius > 50.0) {
-      radius = 50.0;
-    }
 
     if (this.lightSpeed <= 0.0) {
       this.lightSpeed = 0.0;
       this.startTime = 0.0;
-      radius = 0.0;
     } else if (this.lightSpeed > 20.0) {
       this.lightSpeed = 20.0;
     }
 
-    const scale = this.lightSpeed * 4.0 + 20;
     const progress = this.lightSpeed / 20.0;
     const hex = 1 - progress;
 
     this.wireframes.material.opacity = Math.max(0.5 - progress, 0.25);
     this.wireframes.material.color = new THREE.Color(hex, hex, hex);
 
+    let scale = this.lightSpeed * 4.0 + 20;
+
+    if (!this.pressed) {
+      scale -= 0.5;
+    }
+
     this.sphereMaterial.uniforms.progress.value = progress;
     this.sphere.rotation.y += this.lightSpeed / 50.0;
     this.sphere.scale.set(scale, scale, scale);
+    this.overlay.style.opacity = hex;
   }
 
   animate (pressed = false) {
@@ -295,26 +289,59 @@ export default class Particles {
     this.speed      = power * 340 + 10;
     this.distance   = power *  20 + 90;
     this.lightSpeed = power *   5;
-
-    if (!pressed) {
-      this.onKeyUp(!pressed);
-    }
   }
 
   bindEvents () {
-    let events = [
-      { event: 'keydown' , action: this.onKeyDown },
-      { event: 'resize' , action: this.onResize },
-      { event: 'keyup' , action: this.onKeyUp }
-    ];
+    this.renderer.domElement.addEventListener('contextmenu', this.onMouseDown.bind(this))
+    this.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this))
+    this.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this))
 
-    for (let i = 0; i < events.length; i++) {
-      window.addEventListener(events[i].event, events[i].action.bind(this));
+    window.addEventListener('resize', this.onResize.bind(this));
+  }
+
+  onMouseDown (event) {
+    if (event.which === 1) {
+      this.onLeftPress();
+    } else if (event.which === 3) {
+      event.preventDefault()
+      event.stopPropagation()
+      this.controls.enabled = false
+    }
+  }
+
+  onMouseUp (event) {
+    if (event.which === 1) {
+      this.onLeftRelease();
+    } else if (event.which === 3) {
+      this.controls.enabled = true      
+    }
+  }
+
+  onLeftPress (event) {
+    if (this.lightSpeed) {
+      return;
     }
 
-    this.renderer.domElement.addEventListener('contextmenu', this.onRightClick.bind(this))
-    this.renderer.domElement.addEventListener('mousedown', this.onRightClick.bind(this))
-    this.renderer.domElement.addEventListener('mouseup', this.onRightUp.bind(this))
+    const now = Date.now();
+    this.down = now;
+
+    if (this.pressed === null) {
+      this.pressed = now;
+    }
+
+    this.animate(true);
+  }
+
+  onLeftRelease (event) {
+    const delay = !(this.down - this.pressed) ? 1000 : 0;
+
+    if (Date.now() - this.down >= 1000) {
+      this.pressed = null;
+    }
+
+    setTimeout(() => {
+      this.pressed = null;
+    }, delay);
   }
 
   onResize () {
@@ -327,42 +354,5 @@ export default class Particles {
 
     this.camera.aspect = this.size.width / this.size.height;
     this.camera.updateProjectionMatrix();
-  }
-
-  onRightClick (event) {
-    if (event.which === 3) {
-      event.preventDefault()
-      event.stopPropagation()
-      this.controls.enabled = false
-    }
-  }
-
-  onRightUp (event) {
-    this.controls.enabled = true
-  }
-
-  onKeyDown (event) {
-    if (event.keyCode === 32) {
-      if (this.pressed === null) {
-        this.pressed = Date.now();
-      }
-
-      this.down = Date.now();
-      this.animate(true);
-    }
-  }
-
-  onKeyUp (event) {
-    const delay = !(this.down - this.pressed) ? 1000 : 0;
-
-    if (Date.now() - this.down >= 1000) {
-      this.pressed = null;
-    }
-
-    if (event.which === 32) {
-      setTimeout(() => {
-        this.pressed = null;
-      }, delay);
-    }
   }
 }

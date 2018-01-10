@@ -7,10 +7,8 @@ const OrbitControls = require('three-orbit-controls')(THREE);
 
 
 export default class AudioreactiveParticles {
-  constructor (track, lowPerformance = false) {
-    const fftSize = lowPerformance ? 256 : null;
-
-    this.audio = new AudioReactive(track, fftSize);
+  constructor (track) {
+    this.audio = new AudioReactive(track);
     this.audio.setSongFrequencies(510.5, 622.2);
 
     this.shaders = `./glsl/image`;
@@ -169,17 +167,11 @@ export default class AudioreactiveParticles {
     this.renderer.render(this.scene, this.camera);
 
     this.stats.end();
-    requestAnimationFrame(this.update.bind(this));
+    this.frame = requestAnimationFrame(this.update.bind(this));
   }
 
   bindEvents () {
-    let events = [
-      { event: 'resize' , action: this.onResize }
-    ];
-
-    for (let i = 0; i < events.length; i++) {
-      window.addEventListener(events[i].event, events[i].action.bind(this));
-    }
+    window.addEventListener('resize', this.onResize.bind(this));
   }
 
   onResize () {
@@ -192,5 +184,13 @@ export default class AudioreactiveParticles {
 
     this.camera.aspect = this.size.width / this.size.height;
     this.camera.updateProjectionMatrix();
+  }
+
+  dispose () {
+    window.removeEventListener('resize', this.onResize.bind(this));
+    cancelAnimationFrame(this.frame);
+
+    document.body.removeChild(this.renderer.domElement);
+    document.body.removeChild(this.stats.dom);
   }
 }

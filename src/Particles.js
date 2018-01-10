@@ -6,9 +6,8 @@ const OrbitControls = require('three-orbit-controls')(THREE);
 
 
 export default class Particles {
-  constructor (mode) {
+  constructor () {
     this.overlay = document.getElementById('background-overlay');
-    this.shaders = `./glsl/${mode}`;
     this.simulationShader = null;
     this.renderShader = null;
     this.startTime = null;
@@ -16,7 +15,6 @@ export default class Particles {
     this.lightSpeed = 0.0;
     this.distance   = 50.0;
     this.speed      = 10.0;
-    this.mode       = mode;
     this.pressed    = null;
 
     this.size = {
@@ -53,8 +51,6 @@ export default class Particles {
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    // this.renderer.setClearColor(0x000000);
-
     document.body.appendChild(this.renderer.domElement);
   }
 
@@ -162,8 +158,8 @@ export default class Particles {
     texture.needsUpdate = true;
 
     this.simulationShader = new THREE.ShaderMaterial({
-      fragmentShader: require(`${this.shaders}/simulation.frag`),
-      vertexShader: require(`${this.shaders}/simulation.vert`),
+      fragmentShader: require('./glsl/noise/simulation.frag'),
+      vertexShader: require('./glsl/noise/simulation.vert'),
 
       uniforms: {
         distance: { type: 'f', value: this.distance },
@@ -174,8 +170,8 @@ export default class Particles {
     });
 
     this.renderShader = new THREE.ShaderMaterial({
-      fragmentShader: require(`${this.shaders}/render.frag`),
-      vertexShader: require(`${this.shaders}/render.vert`),
+      fragmentShader: require('./glsl/noise/render.frag'),
+      vertexShader: require('./glsl/noise/render.vert'),
 
       uniforms: {
         color:     { type: 'v3', value: this.particleColor },
@@ -230,7 +226,7 @@ export default class Particles {
     this.renderer.render(this.scene, this.camera);
 
     this.stats.end();
-    requestAnimationFrame(this.update.bind(this));
+    this.frame = requestAnimationFrame(this.update.bind(this));
   }
 
   updateSphereAspect (time) {
@@ -340,5 +336,18 @@ export default class Particles {
 
     this.camera.aspect = this.size.width / this.size.height;
     this.camera.updateProjectionMatrix();
+  }
+
+  dispose () {
+    this.renderer.domElement.removeEventListener('contextmenu', this.onMouseDown.bind(this))
+    this.renderer.domElement.removeEventListener('mousedown', this.onMouseDown.bind(this))
+    this.renderer.domElement.removeEventListener('mouseup', this.onMouseUp.bind(this))
+
+    window.removeEventListener('resize', this.onResize.bind(this));
+    cancelAnimationFrame(this.frame);
+    this.overlay.style.opacity = '';
+
+    document.body.removeChild(this.renderer.domElement);
+    document.body.removeChild(this.stats.dom);
   }
 }

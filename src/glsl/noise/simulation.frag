@@ -1,3 +1,6 @@
+// Classic 3D noise by hughsk:
+// https://github.com/hughsk/glsl-noise/blob/master/classic/3d.glsl
+
 precision highp float;
 
 uniform sampler2D texture;

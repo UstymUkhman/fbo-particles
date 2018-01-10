@@ -3,7 +3,7 @@
 import AudioreactiveParticles from './AudioreactiveParticles';
 import Particles from './Particles';
 
-const SONG = 'assets/John Newman - Love Me Again.mp3';
+const SONG = 'assets/Linkin Park - Faint.mp3';
 let currentExperiment = new Particles();
 
 const audioreactive = document.getElementById('audioreactive');
@@ -14,7 +14,7 @@ audioreactive.addEventListener('click', () => {
   audioreactive.classList.add('active');
   particles.classList.remove('active');
 
-  currentExperiment.dispose();
+  currentExperiment.destroy();
   currentExperiment = new AudioreactiveParticles(SONG);
 
   overlay.classList.remove('fade');
@@ -28,7 +28,7 @@ particles.addEventListener('click', () => {
   audioreactive.classList.remove('active');
   particles.classList.add('active');
 
-  currentExperiment.dispose();
+  currentExperiment.destroy();
   currentExperiment = new Particles();
 
   overlay.classList.add('fade');

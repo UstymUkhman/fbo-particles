@@ -25,11 +25,14 @@ void main (void) {
   // );
 
   // vec2 vN = reflection.xy / m + 0.5;
-  // gl_FragColor = vec4(texture2D(white, vN).rgb, 1.0);
+  // gl_FragColor = mix(
+  //   vec4(texture2D(black, vN).rgb, 1.0),
+  //   vec4(texture2D(white, vN).rgb, 1.0),
+  //   progress
+  // );
 
   // "hughsk" version:
   vec2 uv = matcap(eye, norm).xy;
-  // gl_FragColor = vec4(texture2D(white, uv).rgb, 1.0);
 
   gl_FragColor = mix(
     vec4(texture2D(black, uv).rgb, 1.0),

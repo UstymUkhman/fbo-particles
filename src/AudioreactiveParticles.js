@@ -9,7 +9,7 @@ const OrbitControls = require('three-orbit-controls')(THREE);
 export default class AudioreactiveParticles {
   constructor (track) {
     this.audio = new AudioReactive(track);
-    this.audio.setSongFrequencies(510.5, 622.2);
+    this.audio.setSongFrequencies(510.5, 633.55);
 
     this.shaders = `./glsl/image`;
     this.simulationShader = null;
@@ -109,8 +109,6 @@ export default class AudioreactiveParticles {
 
     this.scene.add(this.fbo.particles);
     this.audio.play(this.update.bind(this));
-    // this.audio.getAudioValues();
-    // this.update();
   }
 
   getDataImage () {
@@ -186,9 +184,14 @@ export default class AudioreactiveParticles {
     this.camera.updateProjectionMatrix();
   }
 
-  dispose () {
+  destroy () {
     window.removeEventListener('resize', this.onResize.bind(this));
     cancelAnimationFrame(this.frame);
+
+    this.audio._soundSource.pause()
+    this.audio._soundSource.remove()
+    this.audio._soundSource = null
+    this.audio = null
 
     document.body.removeChild(this.renderer.domElement);
     document.body.removeChild(this.stats.dom);

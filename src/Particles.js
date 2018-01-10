@@ -338,7 +338,7 @@ export default class Particles {
     this.camera.updateProjectionMatrix();
   }
 
-  dispose () {
+  destroy () {
     this.renderer.domElement.removeEventListener('contextmenu', this.onMouseDown.bind(this))
     this.renderer.domElement.removeEventListener('mousedown', this.onMouseDown.bind(this))
     this.renderer.domElement.removeEventListener('mouseup', this.onMouseUp.bind(this))

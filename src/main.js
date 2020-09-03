@@ -1,3 +1,9 @@
-import Playground from '@/Playground';
+import AudioreactiveParticles from '@/AudioreactiveParticles';
 
-export default new Playground();
+document.addEventListener('click', () => {
+  const particles = new AudioreactiveParticles(
+    document.getElementById('container'), () => {
+      particles.startExperiment();
+    }
+  );
+});

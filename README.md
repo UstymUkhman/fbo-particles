@@ -1,3 +1,19 @@
-# FBO Particles #
+# [fbo-particles](http://54.93.165.244/experiments/fbo-particles) #
 
-*npm run build && npm run dev*
+>  WebGL FBO Particles.
+
+![](./public/preview.gif)
+
+`yarn`
+
+`yarn start`
+
+`yarn lint:js`
+
+`yarn lint:css`
+
+`yarn test`
+
+`yarn build`
+
+`yarn serve`

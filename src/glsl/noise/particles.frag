@@ -2,16 +2,17 @@
 
 precision highp float;
 
-uniform sampler2D texture;
+uniform sampler2D data;
 
 uniform float distance;
 uniform float speed;
 uniform float timer;
 
+out vec4 fragColor;
 in vec2 vUv;
 
 void main (void) {
-  vec3 position = texture(texture, vUv).xyz;
+  vec3 position = texture(data, vUv).xyz;
 
   vec3 tar = position + curl(
     position.x, position.y, position.z, timer
@@ -21,5 +22,5 @@ void main (void) {
   position = mix(position, tar, pow(d, 5.0));
 
   float alpha = clamp(speed + 40.0, 0.0, 250.0) / 250.0;
-  gl_FragColor = vec4(position, alpha);
+  fragColor = vec4(position, alpha);
 }

@@ -9,7 +9,7 @@ module.exports = {
     },
 
     sourceType: 'module',
-    ecmaVersion: 2020,
+    ecmaVersion: 2020
   },
 
   globals: {
@@ -36,7 +36,7 @@ module.exports = {
 
   rules: {
     'block-scoped-var': 2,
-    'brace-style': [2, '1tbs', { 'allowSingleLine': true }],
+    'brace-style': 0,
     'camelcase': [2, { 'properties': 'always' }],
     'comma-dangle': [2, 'never'],
     'comma-spacing': [2, { 'before': false, 'after': true }],
@@ -161,7 +161,7 @@ module.exports = {
     'no-with': 2,
     'one-var': 0,
     'operator-assignment': 0,
-    'operator-linebreak': [2, 'after'],
+    'operator-linebreak': 0,
     'padded-blocks': 0,
     'quote-props': 0,
     'quotes': [2, 'single', 'avoid-escape'],
@@ -185,4 +185,4 @@ module.exports = {
     'wrap-regex': 0,
     'yoda': [2, 'never']
   }
-}
+};

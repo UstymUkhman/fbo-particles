@@ -1,15 +1,15 @@
-// import NoiseParticles from '@/NoiseParticles';
+import NoiseParticles from '@/NoiseParticles';
 import AudioreactiveParticles from '@/AudioreactiveParticles';
-
-// let noiseParticles = null;
-let audioreactiveParticles = null;
 
 const noise = document.getElementById('noise');
 const container = document.getElementById('container');
 const audioreactive = document.getElementById('audioreactive');
 
+let noiseParticles = new NoiseParticles(container);
+let audioreactiveParticles = null;
+
 audioreactive.addEventListener('click', () => {
-  // noiseParticles.destroy();
+  noiseParticles.destroy();
   noise.classList.remove('active');
   audioreactive.classList.add('active');
 
@@ -18,10 +18,10 @@ audioreactive.addEventListener('click', () => {
   });
 });
 
-// noise.addEventListener('click', () => {
-//   noise.classList.add('active');
-//   audioreactiveParticles.destroy();
+noise.addEventListener('click', () => {
+  noise.classList.add('active');
+  audioreactiveParticles.destroy();
 
-//   audioreactive.classList.remove('active');
-//   noiseParticles = new NoiseParticles(container);
-// });
+  audioreactive.classList.remove('active');
+  noiseParticles = new NoiseParticles(container);
+});

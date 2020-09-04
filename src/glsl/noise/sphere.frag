@@ -3,6 +3,7 @@ precision highp float;
 uniform sampler2D black, white;
 uniform float progress;
 
+out vec4 fragColor;
 in vec3 norm;
 in vec3 eye;
 
@@ -26,7 +27,7 @@ void main (void) {
     );
    
     vec2 vN = reflection.xy / m + 0.5;
-    gl_FragColor = mix(
+    fragColor = mix(
         vec4(texture(black, vN).rgb, 1.0),
         vec4(texture(white, vN).rgb, 1.0),
         progress
@@ -36,7 +37,7 @@ void main (void) {
   // "hughsk" version:
   vec2 uv = matcap(eye, norm).xy;
 
-  gl_FragColor = mix(
+  fragColor = mix(
     vec4(texture(black, uv).rgb, 1.0),
     vec4(texture(white, uv).rgb, 1.0),
     progress

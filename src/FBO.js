@@ -9,7 +9,7 @@ import { Points } from '@three/objects/Points';
 import { Scene } from '@three/scenes/Scene';
 import { Mesh } from '@three/objects/Mesh';
 
-export default class Fbo {
+export default class FBO {
   constructor (width, height, renderer, simulationMaterial, renderMaterial) {
     const size = width * height;
     const vertices = new Float32Array(size * 3);
@@ -48,6 +48,7 @@ export default class Fbo {
 
     for (let i = 0; i < size; i++) {
       const i3 = i * 3;
+
       vertices[i3] = (i % width) / width;
       vertices[i3 + 1] = (i / width) / height;
     }
@@ -55,7 +56,6 @@ export default class Fbo {
     particles.setAttribute('position', new BufferAttribute(vertices, 3));
 
     this.particles = new Points(particles, renderMaterial);
-    this.particles.position.y = -128.0;
     this.renderer = renderer;
   }
 

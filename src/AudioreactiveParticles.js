@@ -12,7 +12,7 @@ import fragRenderer from '@/glsl/image/render.frag';
 
 import AudioReactive from '@/AudioReactive';
 import { Scene } from '@three/scenes/Scene';
-import Fbo from '@/FBO';
+import FBO from '@/FBO';
 
 const ANGLE = Math.PI / 180;
 const ELEVATION = 64;
@@ -76,6 +76,7 @@ export default class AudioreactiveParticles {
     this.simulationShader = new ShaderMaterial({
       fragmentShader: fragParticles,
       vertexShader: vertParticles,
+      glslVersion: GLSL3,
 
       uniforms: {
         positions: { value: positions },
@@ -86,6 +87,7 @@ export default class AudioreactiveParticles {
     this.renderShader = new ShaderMaterial({
       fragmentShader: fragRenderer,
       vertexShader: vertRenderer,
+      glslVersion: GLSL3,
 
       uniforms: {
         positions: { value: null },
@@ -93,15 +95,13 @@ export default class AudioreactiveParticles {
       }
     });
 
-    this.simulationShader.glslVersion = GLSL3;
-    this.renderShader.glslVersion = GLSL3;
-
-    this.fbo = new Fbo(
+    this.fbo = new FBO(
       this.image.width, this.image.height,
       this.renderer, this.simulationShader, this.renderShader
     );
 
     this.camera.lookAt(this.fbo.particles.position);
+    this.fbo.particles.position.y = -128.0;
     this.scene.add(this.fbo.particles);
 
     this.audio.load();

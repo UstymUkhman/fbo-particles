@@ -3,8 +3,8 @@ precision highp float;
 uniform sampler2D black, white;
 uniform float progress;
 
-varying vec3 norm;
-varying vec3 eye;
+in vec3 norm;
+in vec3 eye;
 
 vec2 matcap (vec3 e, vec3 n) {
   vec3 reflection = reflect(e, n);
@@ -27,8 +27,8 @@ void main (void) {
    
     vec2 vN = reflection.xy / m + 0.5;
     gl_FragColor = mix(
-        vec4(texture2D(black, vN).rgb, 1.0),
-        vec4(texture2D(white, vN).rgb, 1.0),
+        vec4(texture(black, vN).rgb, 1.0),
+        vec4(texture(white, vN).rgb, 1.0),
         progress
     );
   */
@@ -37,8 +37,8 @@ void main (void) {
   vec2 uv = matcap(eye, norm).xy;
 
   gl_FragColor = mix(
-    vec4(texture2D(black, uv).rgb, 1.0),
-    vec4(texture2D(white, uv).rgb, 1.0),
+    vec4(texture(black, uv).rgb, 1.0),
+    vec4(texture(white, uv).rgb, 1.0),
     progress
   );
 }

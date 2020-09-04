@@ -2,7 +2,7 @@ precision highp float;
 
 uniform vec3 color;
 
-varying float size;
+in float size;
 
 void main (void) {
   float alpha = 0.1 + color.x * (1.0 / 1.91875);

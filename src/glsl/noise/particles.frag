@@ -8,10 +8,10 @@ uniform float distance;
 uniform float speed;
 uniform float timer;
 
-varying vec2 vUv;
+in vec2 vUv;
 
 void main (void) {
-  vec3 position = texture2D(texture, vUv).xyz;
+  vec3 position = texture(texture, vUv).xyz;
 
   vec3 tar = position + curl(
     position.x, position.y, position.z, timer

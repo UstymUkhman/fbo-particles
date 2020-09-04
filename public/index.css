@@ -6,8 +6,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 
+  font-family: 'Roboto', sans-serif;
   font-variant-ligatures: none;
-  font-family: sans-serif;
   text-size-adjust: 100%;
   font-style: normal;
   font-kerning: none;
@@ -43,6 +43,70 @@ canvas {
   top: 0;
 }
 
+div#container {
+  background-color: #000000;
+  transition: opacity 0.5s;
+
+  position: absolute;
+  display: block;
+
+  height: 100%;
+  width: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  left: 0;
+  top: 0;
+}
+
+/* div#container.hidden {
+  pointer-events: none;
+  opacity: 0;
+} */
+
+div.switch {
+  border: 1px solid #00cc00;
+  font-family: monospace;
+  margin: 100px auto 0;
+
+  line-height: 25px;
+  color: #00cc00;
+  font-size: 14px;
+
+  position: fixed;
+  cursor: pointer;
+
+  height: 25px;
+  width: 400px;
+  z-index: 1;
+
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+div.switch .button {
+  transition: background-color 0.5s, color 0.5s;
+  display: table-cell;
+
+  text-align: center;
+  width: 200px;
+}
+
+div.switch .button#noise {
+  border-right: 1px solid #00cc00;
+}
+
+div.switch .button.active {
+  background-color: #00cc00;
+  pointer-events: none;
+
+  color: #000000;
+  cursor: default;
+}
+
 div#label {
   background-color: rgba(0, 0, 0, 0.25);
   font-family: 'Roboto', sans-serif;
@@ -54,34 +118,11 @@ div#label {
   color: #00cc00;
   font-size: 13px;
 
-  z-index: 2;
+  z-index: 1;
   right: 0;
   top: 0;
 }
 
 /* div#label.hidden {
-  opacity: 0;
-} */
-
-div#container {
-  background-color: #000000;
-  transition: opacity 0.5s;
-
-  position: absolute;
-  display: block;
-
-  height: 100%;
-  width: 100%;
-  z-index: 2;
-
-  padding: 0;
-  margin: 0;
-
-  left: 0;
-  top: 0;
-}
-
-/* div#container.hidden {
-  pointer-events: none;
   opacity: 0;
 } */

@@ -1,7 +1,7 @@
 precision mediump float;
 
-varying vec3 norm;
-varying vec3 eye;
+out vec3 norm;
+out vec3 eye;
 
 void main (void) {
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);

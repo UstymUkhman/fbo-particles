@@ -50,7 +50,7 @@ export default class AudioreactiveParticles {
 
   createCamera () {
     this.camera = new PerspectiveCamera(60, this.ratio, 1, 1000);
-    this.camera.position.z = 500;
+    this.camera.position.set(0, 150, 500);
   }
 
   createRenderer () {
@@ -101,7 +101,7 @@ export default class AudioreactiveParticles {
     );
 
     this.camera.lookAt(this.fbo.particles.position);
-    this.fbo.particles.position.y = -128.0;
+    this.fbo.particles.position.y = -64.0;
     this.scene.add(this.fbo.particles);
 
     this.audio.load();
@@ -109,12 +109,12 @@ export default class AudioreactiveParticles {
   }
 
   getDataImage () {
-    const canvas = document.createElement('canvas');
     const height = this.image.height;
     const width = this.image.width;
-
     const length = width * height;
+
     const data = new Float32Array(length * 3);
+    const canvas = document.createElement('canvas');
 
     canvas.height = height;
     canvas.width = width;

@@ -10,7 +10,6 @@ import { WebGLRenderer } from '@three/renderers/WebGLRenderer';
 import { TextureLoader } from '@three/loaders/TextureLoader';
 import { LineSegments } from '@three/objects/LineSegments';
 import { DataTexture } from '@three/textures/DataTexture';
-import { OrbitControls } from '@controls/OrbitControls';
 
 import vertParticles from '@/glsl/noise/particles.vert';
 import fragParticles from '@/glsl/noise/particles.frag';
@@ -61,9 +60,8 @@ export default class NoiseParticles {
 
     this.createScene();
     this.createCamera();
-    this.createRenderer();
 
-    this.createControls();
+    this.createRenderer();
     this.createParticles();
 
     this.createSphere();
@@ -88,10 +86,6 @@ export default class NoiseParticles {
     this.container.appendChild(this.renderer.domElement);
   }
 
-  createControls () {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-  }
-
   createParticles () {
     const length = Math.pow(PARTICLES_SIZE, 2) * 3;
     const data = this.getSphere(PARTICLES_SIZE / 4, length);
@@ -103,10 +97,6 @@ export default class NoiseParticles {
     );
 
     this.particleColor = new Vector3();
-
-    this.controls.minDistance = 400;
-    this.controls.maxDistance = 400;
-
     this.camera.position.z = 400;
     texture.needsUpdate = true;
 
@@ -234,7 +224,7 @@ export default class NoiseParticles {
   update () {
     const time = Math.cos(Date.now() * 0.001);
     const speedFrac = Math.max(0, this.speed - 110.0);
-    const scale = this.sprite.scale.x + speedFrac / 25000.0;
+    const scale = this.sprite.scale.x + speedFrac / 100000.0;
 
     this.simulationShader.uniforms.distance.value = this.distance;
     this.simulationShader.uniforms.speed.value = this.speed;
@@ -243,9 +233,9 @@ export default class NoiseParticles {
     this.fbo.particles.rotation.x = time * ANGLE * 2.0;
     this.fbo.particles.rotation.y -= ANGLE * 0.1;
 
-    this.sprite.material.opacity = speedFrac / 100.0;
-    this.sprite.scale.x = Math.min(4, scale);
-    this.sprite.scale.y = Math.min(4, scale);
+    this.sprite.material.opacity = Math.min(0.5, speedFrac / 1000.0);
+    this.sprite.scale.x = Math.min(3.5, scale);
+    this.sprite.scale.y = Math.min(3.5, scale);
 
     this.updateSphere();
     this.fbo.update();
@@ -318,21 +308,11 @@ export default class NoiseParticles {
     if (event.which === 1) {
       this.onLeftPress();
     }
-
-    else if (event.which === 3) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.controls.enabled = false;
-    }
   }
 
   onMouseUp (event) {
     if (event.which === 1) {
       this.pressed = null;
-    }
-
-    else if (event.which === 3) {
-      this.controls.enabled = true;
     }
   }
 

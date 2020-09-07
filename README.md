@@ -1,6 +1,6 @@
 # [fbo-particles](http://54.93.165.244/experiments/fbo-particles) #
 
->  WebGL FBO Particles.
+>  WebGL FBO Particles
 
 ![](./public/preview.gif)
 

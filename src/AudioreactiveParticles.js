@@ -19,7 +19,7 @@ const ELEVATION = 64;
 
 export default class AudioreactiveParticles {
   constructor (container, callback) {
-    this.audio = new AudioReactive('./assets/faint.mp3');
+    this.audio = new AudioReactive('./assets/track.mp3');
     this.audio.setSongFrequencies(510.5, 633.55);
 
     this.width = window.innerWidth;

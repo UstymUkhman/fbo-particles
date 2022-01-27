@@ -14,7 +14,7 @@
     "serve": "npx http-server"
   },
   "dependencies": {
-    "three": "^0.125.0",
+    "three": "^0.137.0",
     "web-audio-analyser": "^2.0.1"
   },
   "devDependencies": {

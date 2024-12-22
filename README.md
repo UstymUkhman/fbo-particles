@@ -1,4 +1,4 @@
-# [fbo-particles](http://35.158.218.205/experiments/fbo-particles/) #
+# [fbo-particles](https://ustymukhman.github.io/fbo-particles/public/) #
 
 >  WebGL FBO Particles
 
